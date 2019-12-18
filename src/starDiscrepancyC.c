@@ -10,6 +10,14 @@
 #include "starDiscrepancyC.h"
 #include "macros.h"
 
+/*
+ * EXACT STAR-DISCREPANCY ALGORITHM
+ * @note: Running time is O(n^{1 + d/2})
+ *
+ * @param r_points [(d x n) matrix] Matrix of points.
+ *
+ * @return [numeric(1)] Star discrepancy.
+*/
 SEXP starDiscrepancyC(SEXP r_points) {
   // first unpack R structures
   EXTRACT_NUMERIC_MATRIX(r_points, c_points, dim, n_points);
@@ -35,6 +43,16 @@ SEXP starDiscrepancyC(SEXP r_points) {
   return ScalarReal(upper);
 }
 
+/*
+ * THRESHOLD ACCEPTING ALGORITHM BY GNEWUCH, WAHLSTROEM AND WINZEN
+ * (https://epubs.siam.org/doi/10.1137/110833865)
+ *
+ * @param r_points [(d x n) matrix] Matrix of points.
+ * @param r_iteer [integer(1)] Number of iterations per trial.
+ * @param r_max_trials [integer(1)] Maximum number of trials.
+ *
+ * @return [numeric(1)] Estimate for star discrepancy.
+*/
 SEXP starDiscrepancyTAC(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
   // first unpack R structures
   EXTRACT_NUMERIC_MATRIX(r_points, c_points, dim, n_points);
@@ -57,9 +75,9 @@ SEXP starDiscrepancyTAC(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
     }
   }
 
-  //delta_result = delta_calc(pointset, n_points, dim);
+  delta_result = delta_calc(pointset, n_points, dim);
   bardelta_result = bardelta_calc(pointset, n_points, dim);
-  return ScalarReal(bardelta_result);
 
-  //return ScalarReal(MIN(delta_result, bardelta_result));
+  // return maximum of both estimates
+  return ScalarReal(MAX(delta_result, bardelta_result));
 }
