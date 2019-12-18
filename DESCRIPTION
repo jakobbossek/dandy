@@ -1,12 +1,14 @@
 Package: sampling
 Title: Sampling Plans in R
-Description: Calculation of star discrepancy of a point set and methods for pseudo-random and quasi-random point set generation: uniform random sampling, latin hypercube sampling, Sobol and Halton sequences.
+Description: Approximate calculation of star discrepancy of a point set and methods for pseudo-random and quasi-random point set generation: uniform random sampling, latin hypercube sampling, Sobol and Halton sequences.
 Version: 1.0.0.0000
 Encoding: UTF-8
 Date: 2019-12-20
 Authors@R: c(
     person("Jakob", "Bossek", email = "j.bossek@gmail.com", role = c("aut", "cre", "cph")),
-    person("Michael H.", "Buselli", role = c("ctb", "cph")))
+    person("Magnus", "Wahlström", email = "magnus.wahlstrom@rhul.ac.uk", role = c("ctb", "cph")),
+    person("Carola", "Doerr", email = "carola.doerr@mpi-inf.mpg.de", role = c("ctb", "cph"))
+    )
 Maintainer: Jakob Bossek <j.bossek@gmail.com>
 License: GPL-3 | file LICENSE
 URL: https://github.com/jakobbossek/sampling

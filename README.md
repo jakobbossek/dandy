@@ -3,7 +3,7 @@
 
 [![Status](https://img.shields.io/badge/Status-experimental-red.svg)](https://GitHub.com/jakobbossek/findAName)
 [![CRAN Status
-Badge](http://www.r-pkg.org/badges/version/ecr)](http://cran.r-project.org/web/packages/findAName)
+Badge](http://www.r-pkg.org/badges/version/findAName)](http://cran.r-project.org/web/packages/findAName)
 [![CRAN
 checks](https://cranchecks.info/badges/worst/findAName)](https://cran.r-project.org/web/checks/check_results_findAName.html)
 [![CRAN
@@ -25,17 +25,18 @@ Sobol design with n=20 points in k=2 dimensions and calculate its exact
 disrepancy.
 
 ``` r
-library(sampling)
+library(findAName)
 library(ggplot2)
 
 n = 50
 methods = c("uniform", "improvedlhs", "halton", "sobol")
 designs = lapply(methods, function(method) {
-  sampling::design(n = n, k = 4, method = method)
+  findAName::design(n = n, k = 5, method = method)
 })
 
 # caluclate star discrepancy
-discrepancies = sapply(designs, sampling::stardiscrepancy, method = "exact")
+discrepancies = sapply(designs, findAName::stardiscrepancy, method = "exact")
+discrepanciesta = sapply(designs, findAName::stardiscrepancy, method = "ta")
 
 # visualize
 designs = do.call(rbind, designs)

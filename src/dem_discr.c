@@ -20,14 +20,14 @@ int cmpdbl(double *a, double *b)
 }
 
 double oydiscr_cell(int npoints, int dim, int rempoints,
-		    double **forced, int nforced, 
+		    double **forced, int nforced,
 		    double *lowerleft, double *upperright)
 {
   double discr, maxdiscr, coordlist[dim][nforced];
   int indexes[dim];
   int i,j,k, status, dimension;
   double biggest[dim][nforced+1], smallest[dim][nforced+1];
-  int maxpoints[dim], ntotal = rempoints + nforced;  
+  int maxpoints[dim], ntotal = rempoints + nforced;
   // biggest[i][j]: biggest product of coords 0--i for hitting j points
   // smallest[i][j]: smallest product of coords 0--i for hitting j+1 points
   // maxpoints[i]: number of points you get in total from coords 0--i
@@ -35,7 +35,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
   for (i=0; i<dim; i++) {
     vol1 *= lowerleft[i];
     vol2 *= upperright[i];
-  }    
+  }
 #ifdef SPAM
   fprintf(stderr, "Parameters: npoints %d, dim %d, rempoints %d, nforced %d\n",
 	  npoints, dim, rempoints, nforced);
@@ -53,7 +53,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
     fprintf(stderr, ")\n");
   }
 #endif
-  
+
   maxdiscr = vol2 - (double)rempoints/npoints;
   discr = (double)(rempoints+nforced)/npoints - vol1;
   if (discr > maxdiscr)
@@ -74,7 +74,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
     for (j=0; j<dim; j++) {
       // order is chosen to handle final box
       if (forced[i][j] <= lowerleft[j])
-	continue; 
+	continue;
       else if (forced[i][j] >= upperright[j])
 	break;
       else { // strictly internal
@@ -102,7 +102,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
   maxpoints[0]=indexes[0];
   for (i=1; i<dim; i++)
     maxpoints[i]=maxpoints[i-1]+indexes[i];
-  
+
 #ifdef SPAM
   fprintf(stderr, "Categorization: %d lower-left, %d internal.\n", rempoints, maxpoints[dim-1]);
   for (i=0; i<dim; i++) {
@@ -116,7 +116,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
     fprintf(stderr, "\n");
   }
 #endif
-  
+
   // coord 0 first, since there is no recursion for that:
   smallest[0][0]=lowerleft[0];
   for (j=0; j<indexes[0]; j++) {
@@ -132,7 +132,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
     fprintf(stderr, "%g ", smallest[0][j]);
   fprintf(stderr, "\n");
 #endif
-    
+
   for (i=1; i<dim; i++) {
     // first the special loop for smallest: "nothing contributed by us"
     for (j=0; j<=maxpoints[i-1]; j++)
@@ -168,7 +168,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
 #endif
   }
   // now, use these to find lower, upper limits
-  // mode: always contain "rempoints", additionally 
+  // mode: always contain "rempoints", additionally
   //         pick from smallest[dim-1], biggest[dim-1]
   maxdiscr=0;
   for (i=0; i<=maxpoints[dim-1]; i++) { // i counts internal points
@@ -202,7 +202,7 @@ double oydiscr_cell(int npoints, int dim, int rempoints,
 //   ON lower-left counts as in (including when lowerleft=1)
 //   ON upper-right counts as out (except if previous).
 double oydiscr_int(double **pointset, int npoints, int dim, int rempoints,
-		   double **forced, int nforced, int cdim, 
+		   double **forced, int nforced, int cdim,
 		   double *lowerleft, double *upperright)
 {
   double coord, forcedcoord, lowedge=0.0, highedge;
@@ -215,13 +215,13 @@ double oydiscr_int(double **pointset, int npoints, int dim, int rempoints,
   //                forcedidx: next unused forced element (a.k.a. counter)
   //                curridx: current pointset point ("i" as loop var)
   //  coords:
-  //           coord is value of current pointset-point, 
+  //           coord is value of current pointset-point,
   //           forcedcoord is value of next-up forced boundary,
   //           lowedge is value of last boundary we used
   // newcount counts number of pointset-points since last coord
   if (cdim==dim) {
     free(newforced);
-    return oydiscr_cell(npoints, dim, rempoints, 
+    return oydiscr_cell(npoints, dim, rempoints,
 			forced, nforced,
 			lowerleft, upperright);
   }
@@ -280,7 +280,7 @@ double oydiscr_int(double **pointset, int npoints, int dim, int rempoints,
     for (; (j<rempoints) && (pointset[j][cdim] < highedge); j++)
       newforced[newforcedidx++] = pointset[j];
     if (j>(curridx+1))
-      resort=1; 
+      resort=1;
     // 3. make call with properly adjusted boundaries, update variables
     discr = oydiscr_int(pointset, npoints, dim, newrempoints,
 			newforced, newforcedidx, cdim+1,
@@ -316,9 +316,13 @@ double oydiscr_int(double **pointset, int npoints, int dim, int rempoints,
   free(newforced);
   return maxdiscr;
 }
-    
+
 double oydiscr(double **pointset, int dim, int npoints, double *lower)
 {
+  // JAKOB: otherwise in subsequent applications of the function
+  // in R we get always the same output.
+  globallower = 0;
+
   double lowerleft[dim], upperright[dim];
   double **pre_force = malloc(2*dim*sizeof(double *));
   double discr, *border;
@@ -342,7 +346,7 @@ double oydiscr(double **pointset, int dim, int npoints, double *lower)
   for (i=0; i<dim; i++) {
     maxcoord=-1.0;
     maxpos=-1;
-    for (j=0; j<npoints; j++) 
+    for (j=0; j<npoints; j++)
       if (pointset[j][i] > maxcoord) {
 	maxcoord = pointset[j][i];
 	maxpos=j;
@@ -356,7 +360,7 @@ double oydiscr(double **pointset, int dim, int npoints, double *lower)
     else
       clone_set[k++]=pointset[i];
 //  discr = oydiscr_int(pointset, npoints, dim, npoints,
-//		      pre_force, dim, 0, 
+//		      pre_force, dim, 0,
 //		      lowerleft, upperright);
 //  discr = oydiscr_int(clone_set, npoints, dim, k,
 //		      pre_force, j, 0,

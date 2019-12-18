@@ -48,9 +48,9 @@ stardiscrepancy = function(x, method = "exact", iters = 1e5, trials = 10) {
       BBmisc::messagef("[sampling::stardiscrepancy] Exact star-discrepancy calculation requires
         time O(n^{1+d/2}) time.\n Go grab yourself a coffee. This may take some time.")
     }
-    return(.Call("starDiscrepancyC", t(x)))
+    return(.Call("starDiscrepancyC", t(x[])))
   }
 
   #SEEDING
-  return(.Call("starDiscrepancyTAC", t(x), as.integer(iters), as.integer(trials)))
+  return(.Call("starDiscrepancyTAC", t(x[]), as.integer(iters), as.integer(trials)))
 }

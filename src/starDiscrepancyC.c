@@ -38,6 +38,12 @@ SEXP starDiscrepancyC(SEXP r_points) {
     }
   }
 
+  FILE *random;
+  unsigned int seed;
+  random = fopen("/dev/random", "rb");
+  fread(&seed, 4, 1, random);
+  srand(seed);
+
   upper = oydiscr(pointset, dim, n_points, &lower);
 
   return ScalarReal(upper);
