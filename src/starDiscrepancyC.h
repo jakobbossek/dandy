@@ -8,3 +8,4 @@
 #include "macros.h"
 
 SEXP starDiscrepancyC(SEXP r_points);
+SEXP starDiscrepancyTAC(SEXP r_points, SEXP r_iter, SEXP r_max_trials);

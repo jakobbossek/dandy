@@ -89,5 +89,5 @@ design = function(n, k, method, l = 0, u = 1, as.df = TRUE, ...) {
 #' Get character vector of supported design generators.
 #' @export
 getSupportedMethods = function() {
-  c("uniform", "improvedlhs", "maximinlhs", "geneticlhs" "halton", "sobol")
+  c("uniform", "improvedlhs", "maximinlhs", "geneticlhs", "halton", "sobol")
 }
