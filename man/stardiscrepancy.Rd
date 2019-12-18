@@ -2,18 +2,47 @@
 % Please edit documentation in R/stardiscrepancy.R
 \name{stardiscrepancy}
 \alias{stardiscrepancy}
-\title{Calculate star discrepancy of a set of points.}
+\title{Star discrepancy calculation.}
 \usage{
-stardiscrepancy(x)
+stardiscrepancy(x, method = "exact", iters = 1e+05, trials = 10)
 }
 \arguments{
 \item{x}{[\code{matrix(n, d)}]\cr
 An \eqn{n \times d} matrix where \eqn{n} is the number of points and \eqn{d}
 is the dimension of the search space.}
+
+\item{method}{[\code{character(1)}]\cr
+Use option \dQuote{exact} for exact star discrepancy calculation and
+\dQuote{ta} for the threshold accepting based discrepancy algorithm by
+Gnewuch, Wahlstroem and Winzen [1].}
+
+\item{iters}{[\code{integer(1)}]\cr
+Number of iterations for the treshold accepting discrepancy approximation.
+Default is 100000.}
+
+\item{trials}{[\code{integer(1)}]\cr
+Number of independent trials of threshold accepting discrepancy approximation.
+Default is 10.}
 }
 \value{
-[\numeric(1)]\cr Star discrepancy of \code{x}.
+[\code{numeric}(1)]\cr Star discrepancy of \code{x}.
 }
 \description{
-To be written ...
+Method for calculating the (star) discrepancy of \eqn{n} points in \eqn{d}
+dimensions. The function offers an exact approach with running time
+\eqn{O(n^{1+d/2})} and a sophisticated approximation method based on
+threshold accepting introduced by Gnewuch, Wahlström, and Winzen [1].
+}
+\examples{
+d = design(n = 20, k = 3, method = "uniform")
+stardiscrepancy(d)
+\dontrun{
+stardiscrepancy(d, method = "ta", iter = 100, trials = 3)
+}
+}
+\references{
+[1] Gnewuch, Michael, Magnus Wahlström, and Carola Winzen. "A NEW RANDOMIZED
+ALGORITHM TO APPROXIMATE THE STAR DISCREPANCY BASED ON THRESHOLD ACCEPTING."
+SIAM Journal on Numerical Analysis 50, no. 2 (2012): 781-807.
+www.jstor.org/stable/41582760.
 }

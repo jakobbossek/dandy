@@ -21,7 +21,7 @@ Name of method used to generate the design. Possible values are
   \item{maximinlhs}{Delegate to \code{\link[lhs]{maximinLHS}}.}
   \item{geneticlhs}{Delegate to \code{\link[lhs]{geneticLHS}}.}
   \item{halton}{Delegate to \code{\link[randtoolbox]{halton}}.}
-  \item{sobol}{Delegate to \code{\link[randtoolbox]{sobol}}.}
+  \item{sobol}{Delegate to \code{\link[randtoolbox]{sobol}} with option scrambling=3.}
 }}
 
 \item{l}{[\code{numeric}]\cr
@@ -45,12 +45,13 @@ Further parameters passed down to generator if applicable.}
 Design points as a matrix or data.frame (see parameter \code{as.df}).
 }
 \description{
-To be written ...
+Generate pseudo-randon or quasi-random designs. Basically a wrapper
+around different functions from packages \pkg{lhs} and \pkg{randtoolbox}.
 }
 \examples{
 methods = getSupportedMethods()
 designs = lapply(methods, function(method) {
-  design(n = 100, k = 2, method = method, l = -5, upper = c(5, 10), as.df = FALSE)
+  design(n = 100, k = 2, method = method, l = -5, u = c(5, 10), as.df = FALSE)
 })
 
 # pass down options to generator

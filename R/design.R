@@ -2,7 +2,8 @@
 #' Create a design.
 #'
 #' @description
-#' To be written ...
+#' Generate pseudo-randon or quasi-random designs. Basically a wrapper
+#' around different functions from packages \pkg{lhs} and \pkg{randtoolbox}.
 #'
 #' @param n [\code{integer(1)}]\cr
 #'   Number of design points (rows).
@@ -24,7 +25,7 @@
 #'     \item{maximinlhs}{Delegate to \code{\link[lhs]{maximinLHS}}.}
 #'     \item{geneticlhs}{Delegate to \code{\link[lhs]{geneticLHS}}.}
 #'     \item{halton}{Delegate to \code{\link[randtoolbox]{halton}}.}
-#'     \item{sobol}{Delegate to \code{\link[randtoolbox]{sobol}}.}
+#'     \item{sobol}{Delegate to \code{\link[randtoolbox]{sobol}} with option scrambling=3.}
 #'   }
 #' @param as.df [\code{logical(1)}]\cr
 #'   Return points as data frame?
@@ -35,7 +36,7 @@
 #' @examples
 #' methods = getSupportedMethods()
 #' designs = lapply(methods, function(method) {
-#'   design(n = 100, k = 2, method = method, l = -5, upper = c(5, 10), as.df = FALSE)
+#'   design(n = 100, k = 2, method = method, l = -5, u = c(5, 10), as.df = FALSE)
 #' })
 #'
 #' # pass down options to generator
@@ -65,12 +66,14 @@ design = function(n, k, method, l = 0, u = 1, as.df = TRUE, ...) {
     lhs::improvedLHS(n = n, k = k, ...)
   } else if (method == "maximinlhs") {
     lhs::maximinLHS(n = n, k = k, ...)
-  } else if (method == "improvedlhs") {
+  } else if (method == "geneticlhs") {
     lhs::geneticLHS(n = n, k = k, ...)
   } else if (method == "halton") {
     randtoolbox::halton(n = n, dim = k, ...)
   } else if (method == "sobol") {
-    randtoolbox::sobol(n = n, dim = k, scrambling = 3, seed = ceiling(runif(1L, min = 1, max = 1000000)))
+    args = BBmisc::insert(list(scrambling = 3, seed = ceiling(runif(1L, min = 1, max = 10000000))), list(...))
+    args$n = n; args$dim = k
+    do.call(randtoolbox::sobol, args)
   } else {
     BBmisc::stopf("[sampling::design] Unsupported method '%s'.", method)
   }
