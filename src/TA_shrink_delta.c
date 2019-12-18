@@ -19,7 +19,6 @@
 #include <math.h>
 #include <string.h>
 
-#include "TA_base_delta.h"
 #include "TA_common.h"
 
 #ifndef MC
@@ -45,7 +44,8 @@ int i_tilde=I_TILDE;
 int trials=TRIALS;
 
 #ifndef VERSION
-#define VERSION 0
+// JAKOB: as in Makefile
+#define VERSION 2
 #endif
 
 // global variables to store info about pointset
@@ -117,7 +117,7 @@ double best_of_rounded_delta(int *xn_plus)
 
 double delta_calc(double **pointset, int n, int d)
 {
-  int k[d];
+  int k[d], start[d];
 
   int i, j, p, t;           // loop variables
 
@@ -142,26 +142,42 @@ double delta_calc(double **pointset, int n, int d)
 
   //Sort the grid points, setup global variables
   process_coord_data(pointset, n, d);
-  for (j=0; j<d; j++) {
-    if (k_div)
-      k[j]=(int)(n_coords[j]/k_div);
-    else if (n<100)
-      k[j]=(int)(n_coords[j]/4);
-    else
-      k[j]=(int)(n_coords[j]/8);
-  }
 
   //Algorithm starts here
   for(t=1;t<=trials;t++)
     { //Initialization
       fprintf(stderr, "Trial %d/%d\n", t, trials);
-  //Generate threshold sequence
-  for(i=1;i<=outerloop;i++){
-    //generation of random point xc
-    generate_xc_delta(xc_index);
 
-    //(Possibly) Snaps the point upwards and computes the fitness
-    current = best_of_rounded_delta(xc_index);
+      //Initialize k-value
+      for (j=0; j<d; j++) {
+	start[j]=(int)((n_coords[j]-1)/2);
+      }
+      //Initialize mc-value
+      mc=2;
+
+      //Initialize iteration count
+      current_iteration=0;
+
+      //Generate threshold sequence
+      for(i=1;i<=outerloop;i++){
+
+	current_iteration++;
+	//Update k-value
+	  for (j=0; j<d; j++) {
+	    k[j] = start[j]*(((double)outerloop-current_iteration)/(outerloop)) +
+	      1*((double)current_iteration/(outerloop));
+		  //	    k[j]=start[j] - (int)((3.0/4)*(current_iteration/outerloop)*(start[j]-1));
+	  }
+
+        //Update mc-value
+	  mc=2+(int)(current_iteration/outerloop*(d-2));
+
+
+	//generation of random point xc
+	generate_xc_delta(xc_index);
+
+	//(Possibly) Snaps the point upwards and computes the fitness
+	current = best_of_rounded_delta(xc_index);
 
 	//draw a neighbour of xc
 	generate_neighbor_delta(xn_plus_index, xc_index, k, mc);
@@ -183,6 +199,13 @@ double delta_calc(double **pointset, int n, int d)
       real_when=0;
       real_max_discr=0;
 
+      //Initialize k-value
+      for (j=0; j<d; j++) {
+	start[j]=(int)((n_coords[j]-1)/2);
+      }
+      //Initialize mc-value
+      mc=2+(int)(current_iteration/(innerloop*outerloop)*(d-2));
+
 
       //draw a random initial point
       generate_xc_delta(xc_index);
@@ -200,6 +223,30 @@ double delta_calc(double **pointset, int n, int d)
 	  for(p=1;p<=innerloop;p++)
 	    {
 	      current_iteration++;
+
+	      //Update k-value
+#ifdef PRINT_RANGE_DATA
+	      if (p==1)
+		fprintf(stderr, "Snapshot: range ");
+#endif
+	      for (j=0; j<d; j++) {
+		k[j] = start[j]*(((double)innerloop*outerloop-current_iteration)/(innerloop*outerloop)) +
+		  1*((double)current_iteration/(innerloop*outerloop));
+		  //		k[j]=(int)(start[j]-(int)(current_iteration/(innerloop*outerloop)*(start[j]-1)));
+#ifdef PRINT_RANGE_DATA
+		if (p==1)
+		  fprintf(stderr, "%d ", k[j]);
+#endif
+	      }
+
+	      //Update mc-value
+	      mc=2+(int)(current_iteration/(innerloop*outerloop)*(d-2));
+#ifdef PRINT_RANGE_DATA
+	      if (p==1)
+		fprintf(stderr, " threshold %g mc %d\n", T, mc);
+#endif
+	      //mc=2;
+
 	      //Get random neighbor
 	      generate_neighbor_delta(xn_plus_index, xc_index,k,mc);
 #ifdef DISPLAY_CANDIDATES

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #include "dem_discr.h"
-//#include "TA_base_delta.h"
-#include "TA_base_bardelta.h"
+#include "TA_shrink_delta.h"
+#include "TA_shrink_bardelta.h"
 #include "starDiscrepancyC.h"
 #include "macros.h"
 
@@ -57,8 +57,9 @@ SEXP starDiscrepancyTAC(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
     }
   }
 
-  delta_result = delta_calc(pointset, n_points, dim);
+  //delta_result = delta_calc(pointset, n_points, dim);
   bardelta_result = bardelta_calc(pointset, n_points, dim);
+  return ScalarReal(bardelta_result);
 
-  return ScalarReal(MIN(delta_result, bardelta_result));
+  //return ScalarReal(MIN(delta_result, bardelta_result));
 }

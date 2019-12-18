@@ -19,7 +19,6 @@
 #include <math.h>
 #include <string.h>
 
-#include "bz_discr.h"
 #include "TA_common.h"
 
 #ifndef MC
@@ -45,7 +44,8 @@ int i_tilde_bardelta=I_TILDE;
 int trials_bardelta=TRIALS;
 
 #ifndef VERSION
-#define VERSION 0
+// JAKOB: as in Makefile
+#define VERSION 2
 #endif
 
 // global variables to store info about pointset
@@ -152,7 +152,7 @@ double best_of_rounded_bardelta(int *xn_minus, int *xn_extraminus, int *xc_index
 
 double bardelta_calc(double **pointset, int n, int d)
 {
-  int k[d];
+  int k[d], start[d];
 
   int i, j, p, t;           // loop variables
 
@@ -177,24 +177,38 @@ double bardelta_calc(double **pointset, int n, int d)
 
   //Sort the grid points, setup global variables
   process_coord_data(pointset, n, d);
-  for (j=0; j<d; j++) {
-    if (k_div_bardelta)
-      k[j]=(int)(n_coords[j]/k_div_bardelta);
-    else if (n<100)
-      k[j]=(int)(n_coords[j]/4);
-    else
-      k[j]=(int)(n_coords[j]/8);
-  }
 
   //Algorithm starts here
   for(t=1;t<=trials_bardelta;t++)
     { //Initialization
       fprintf(stderr, "Trial %d/%d\n", t, trials_bardelta);
-      fprintf(stderr, "Iter %d\n", i_tilde_bardelta * i_tilde_bardelta);
+
+      //Initialize k-value
+      for (j=0; j<d; j++) {
+	start[j]=(int)((n_coords[j]-1)/2);
+      }
+      //Initialize mc_bardelta-value
+      mc_bardelta=2;
+
+      //Initialize iteration count
+      current_iteration=0;
 
       //Generate threshold sequence   (only once)
       //      fprintf(stderr, "Generating threshold\n");
       for(i=1;i<=outerloop;i++){
+
+	current_iteration++;
+	//Update k-value
+	  for (j=0; j<d; j++) {
+	    k[j] = start[j]*(((double)outerloop-current_iteration)/(outerloop)) +
+	      1*((double)current_iteration/(outerloop));
+		  //	    k[j]=start[j] - (int)((3.0/4)*(current_iteration/outerloop)*(start[j]-1));
+	  }
+
+        //Update mc_bardelta-value
+	  mc_bardelta=2+(int)(current_iteration/outerloop*(d-2));
+
+
 	//generation of random point xc
 	generate_xc_bardelta(xn_minus_index, xn_extraminus_index);
 
@@ -221,6 +235,13 @@ double bardelta_calc(double **pointset, int n, int d)
       real_when_bardelta=0;
       real_max_discr_bardelta=0;
 
+      //Initialize k-value
+      for (j=0; j<d; j++) {
+	start[j]=(int)((n_coords[j]-1)/2);
+      }
+      //Initialize mc_bardelta-value
+      mc_bardelta=2+(int)(current_iteration/(innerloop*outerloop)*(d-2));
+
 
       //draw a random initial point
       generate_xc_bardelta(xn_minus_index, xn_extraminus_index);
@@ -238,6 +259,30 @@ double bardelta_calc(double **pointset, int n, int d)
 	  for(p=1;p<=innerloop;p++)
 	    {
 	      current_iteration++;
+
+	      //Update k-value
+#ifdef PRINT_RANGE_DATA
+	      if (p==1)
+		fprintf(stderr, "Snapshot: range ");
+#endif
+	      for (j=0; j<d; j++) {
+		k[j] = start[j]*(((double)innerloop*outerloop-current_iteration)/(innerloop*outerloop)) +
+		  1*((double)current_iteration/(innerloop*outerloop));
+		  //		k[j]=(int)(start[j]-(int)(current_iteration/(innerloop*outerloop)*(start[j]-1)));
+#ifdef PRINT_RANGE_DATA
+		if (p==1)
+		  fprintf(stderr, "%d ", k[j]);
+#endif
+	      }
+
+	      //Update mc_bardelta-value
+	      mc_bardelta=2+(int)(current_iteration/(innerloop*outerloop)*(d-2));
+#ifdef PRINT_RANGE_DATA
+	      if (p==1)
+		fprintf(stderr, " threshold %g mc_bardelta %d\n", T, mc_bardelta);
+#endif
+	      //mc_bardelta=2;
+
 	      //Get random neighbor
 	      generate_neighbor_bardelta(xn_minus_index, xn_extraminus_index, xc_index,k,mc_bardelta);
 #ifdef DISPLAY_CANDIDATES
@@ -260,7 +305,6 @@ double bardelta_calc(double **pointset, int n, int d)
 		      current_iteration, fxc, current, global[t]);
 #endif
 	      //Global update if necessary
-        //fprintf(stderr, "fxc in iter %d is %g\n", fxc, current_iteration);
 	      if(fxc>global[t]){
 		global_switches[t]++;
 		global[t]=fxc;
