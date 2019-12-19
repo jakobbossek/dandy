@@ -150,8 +150,11 @@ double best_of_rounded_bardelta(int *xn_minus, int *xn_extraminus, int *xc_index
 
 
 
-double bardelta_calc(double **pointset, int n, int d)
+double bardelta_calc(double **pointset, int n, int d, int iter, int max_trials)
 {
+  trials_bardelta = max_trials;
+  i_tilde_bardelta = (int)sqrt(iter);
+
   int k[d], start[d];
 
   int i, j, p, t;           // loop variables

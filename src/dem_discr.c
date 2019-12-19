@@ -10,14 +10,25 @@
 
 double globallower;
 
-int cmpdbl(double *a, double *b)
+int cmpdbl(const void *pa, const void *pb)
 {
+  double *a = (double *) pa;
+  double *b = (double *) pb;
   if ((*a) < (*b))
     return -1;
   else if ((*a) == (*b))
     return 0;
   return 1;
 }
+
+// int cmpdbl(double *a, double *b)
+// {
+//   if ((*a) < (*b))
+//     return -1;
+//   else if ((*a) == (*b))
+//     return 0;
+//   return 1;
+// }
 
 double oydiscr_cell(int npoints, int dim, int rempoints,
 		    double **forced, int nforced,

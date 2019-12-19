@@ -2,4 +2,4 @@
 #include <math.h>
 #include <stdlib.h>
 
-double bardelta_calc(double **pointset, int n, int d);
+double bardelta_calc(double **pointset, int n, int d, int iter, int max_trials);

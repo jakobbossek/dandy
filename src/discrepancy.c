@@ -75,8 +75,8 @@ SEXP discrepancyGWW(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
     }
   }
 
-  delta_result = delta_calc(pointset, n_points, dim);
-  bardelta_result = bardelta_calc(pointset, n_points, dim);
+  delta_result = delta_calc(pointset, n_points, dim, iter, max_trials);
+  bardelta_result = bardelta_calc(pointset, n_points, dim, iter, max_trials);
 
   // return maximum of both estimates
   return ScalarReal(MAX(delta_result, bardelta_result));

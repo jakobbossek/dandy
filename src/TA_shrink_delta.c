@@ -115,8 +115,11 @@ double best_of_rounded_delta(int *xn_plus)
 
 
 
-double delta_calc(double **pointset, int n, int d)
+double delta_calc(double **pointset, int n, int d, int iter, int max_trials)
 {
+  trials = max_trials;
+  i_tilde = (int)sqrt(iter);
+
   int k[d], start[d];
 
   int i, j, p, t;           // loop variables

@@ -29,6 +29,19 @@ int cmpkeyk(double **pt1, double **pt2)
   return 0;
 }
 
+// int cmpkeyk(const void *pt1, const void *pt2)
+// {
+//   double a = ((double *)(pt1))[comparedim];
+//   double b = ((double *)(pt2))[comparedim];
+//   if (a < b)
+//     return -1;
+//   else if (a > b)
+//     return 1;
+//   return 0;
+// }
+
+
+
 int intpoints(double **pointset, int dim, int npoints, double *base)
 {
   int n=npoints,i,j;
@@ -44,10 +57,10 @@ int intpoints(double **pointset, int dim, int npoints, double *base)
 }
 
 // Fixes one dimension at a time, each dimension defined by a point (which
-// must be on the boundary of the box).  Maintains list of points that are 
-// still possible (first rempoints points) and smallest base compatible with 
-// earlier dimension choices (boundary points must not be excluded). 
-double int_poly_discr(double **pointset, int dim, int npoints, int rempoints, 
+// must be on the boundary of the box).  Maintains list of points that are
+// still possible (first rempoints points) and smallest base compatible with
+// earlier dimension choices (boundary points must not be excluded).
+double int_poly_discr(double **pointset, int dim, int npoints, int rempoints,
 		      double *base, int cdim)
 {
   double discr,maxdiscr=0.0, basecopy[dim], *ptcopy[rempoints];
@@ -82,11 +95,11 @@ double int_poly_discr(double **pointset, int dim, int npoints, int rempoints,
   for (i=cdim; i<dim; i++)
     basecopy[i]=base[i];
   comparedim = cdim;
-  qsort(pointset, rempoints, sizeof(double *), cmpkeyk);    
+  qsort(pointset, rempoints, sizeof(double *), cmpkeyk);
 #ifdef SPAM
   for (i=0; i<rempoints; i++) {
     fprintf(stderr, "Point %04d: (%g", i, pointset[i][0]);
-    for (j=1; j<dim; j++) 
+    for (j=1; j<dim; j++)
       fprintf(stderr, ", %g", pointset[i][j]);
     fprintf(stderr, ")\n");
   }
@@ -98,10 +111,10 @@ double int_poly_discr(double **pointset, int dim, int npoints, int rempoints,
     if (pointset[i][cdim] < base[cdim]-INT_EPS) {
 #ifdef SPAM
       fprintf(stderr, "Skip'ng %d: coord too small\n", i);
-#endif      
+#endif
       continue;
     }
-    
+
     base[cdim]=pointset[i][cdim];
     for (j=cdim+1; j<dim; j++) {
       if (pointset[i][j] > base[j])
@@ -113,11 +126,11 @@ double int_poly_discr(double **pointset, int dim, int npoints, int rempoints,
       resort=1;
       for (j=0; j<rempoints; j++)
 	ptcopy[j]=pointset[j];
-    } 
+    }
     j=i+1;
     while ((j < rempoints) && (pointset[j-1][cdim]==pointset[j][cdim]))
       j++;
-    
+
 #ifdef SPAM
     fprintf(stderr, "Calling %d\n", i);
 #endif
@@ -143,9 +156,9 @@ double int_poly_discr(double **pointset, int dim, int npoints, int rempoints,
     base[j]=basecopy[j];
   if (discr > maxdiscr)
     maxdiscr=discr;
-  
+
   return maxdiscr;
-}  
+}
 
 double poly_discr(double **pointset, int dim, int npoints)
 {
