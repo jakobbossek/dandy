@@ -1,8 +1,6 @@
-#' @title
-#' Star discrepancy calculation.
+#' @title Star discrepancy calculation.
 #'
-#' @description
-#' Method for calculating the (star) discrepancy of \eqn{n} points in \eqn{d}
+#' @description Method for calculating the (star) discrepancy of \eqn{n} points in \eqn{d}
 #' dimensions. The function offers an exact approach with running time
 #' \eqn{O(n^{1+d/2})} and a sophisticated approximation method based on
 #' threshold accepting introduced by Gnewuch, Wahlström, and Winzen [1].
@@ -29,14 +27,17 @@
 #'
 #' @examples
 #' d = design(n = 20, k = 3, method = "uniform")
-#' stardiscrepancy(d)
+#' discrepancy(d)
 #' \dontrun{
-#' stardiscrepancy(d, method = "ta", iter = 100, trials = 3)
+#' discrepancy(d, method = "ta", iter = 100, trials = 3)
 #' }
 #' @export
-stardiscrepancy = function(x, method = "exact", iters = 1e5, trials = 10) {
+discrepancy = function(x, method = "exact", iters = 1e5, trials = 10) {
   if (checkmate::testDataFrame(x))
     x = unname(as.matrix(x))
+
+  if (!all((x >= 0) & (x <= 1)))
+    BBmisc::stopf("[dandy::discrepancy] Design need to be in [0, 1]^d.")
 
   checkmate::assertMatrix(x, min.rows = 2L, min.cols = 2L, any.missing = FALSE, all.missing = FALSE, mode = "numeric")
   n = nrow(x)
@@ -44,13 +45,14 @@ stardiscrepancy = function(x, method = "exact", iters = 1e5, trials = 10) {
 
   checkmate::assertChoice(method, choices = c("exact", "ta"))
   if (method == "exact") {
-    if (n^(1 + ceiling(d/2)) > 1e6) {
-      BBmisc::messagef("[sampling::stardiscrepancy] Exact star-discrepancy calculation requires
+    if (n^(1 + ceiling(d/2)) > 1e7) {
+      BBmisc::messagef("[dandy::discrepancy] Exact star-discrepancy calculation requires
         time O(n^{1+d/2}) time.\n Go grab yourself a coffee. This may take some time.")
     }
-    return(.Call("starDiscrepancyC", t(x[])))
+    return(.Call("discrepancyExact", t(x)))
   }
 
-  #SEEDING
-  return(.Call("starDiscrepancyTAC", t(x[]), as.integer(iters), as.integer(trials)))
+  iters = checkmate::asInt(iters, lower = 100L)
+  trials = checkmate::asInt(trials, lower = 1L)
+  return(.Call("discrepancyGWW", t(x), iters, trials))
 }

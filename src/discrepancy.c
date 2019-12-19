@@ -7,7 +7,7 @@
 #include "dem_discr.h"
 #include "TA_shrink_delta.h"
 #include "TA_shrink_bardelta.h"
-#include "starDiscrepancyC.h"
+#include "discrepancy.h"
 #include "macros.h"
 
 /*
@@ -18,7 +18,7 @@
  *
  * @return [numeric(1)] Star discrepancy.
 */
-SEXP starDiscrepancyC(SEXP r_points) {
+SEXP discrepancyExact(SEXP r_points) {
   // first unpack R structures
   EXTRACT_NUMERIC_MATRIX(r_points, c_points, dim, n_points);
 
@@ -38,12 +38,6 @@ SEXP starDiscrepancyC(SEXP r_points) {
     }
   }
 
-  FILE *random;
-  unsigned int seed;
-  random = fopen("/dev/random", "rb");
-  fread(&seed, 4, 1, random);
-  srand(seed);
-
   upper = oydiscr(pointset, dim, n_points, &lower);
 
   return ScalarReal(upper);
@@ -59,7 +53,7 @@ SEXP starDiscrepancyC(SEXP r_points) {
  *
  * @return [numeric(1)] Estimate for star discrepancy.
 */
-SEXP starDiscrepancyTAC(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
+SEXP discrepancyGWW(SEXP r_points, SEXP r_iter, SEXP r_max_trials) {
   // first unpack R structures
   EXTRACT_NUMERIC_MATRIX(r_points, c_points, dim, n_points);
   EXTRACT_INTEGER(r_iter, iter);

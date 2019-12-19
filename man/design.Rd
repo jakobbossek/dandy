@@ -2,7 +2,7 @@
 % Please edit documentation in R/design.R
 \name{design}
 \alias{design}
-\title{Create a design.}
+\title{Design generator.}
 \usage{
 design(n, k, method, l = 0, u = 1, as.df = TRUE, ...)
 }
@@ -45,7 +45,8 @@ Further parameters passed down to generator if applicable.}
 Design points as a matrix or data.frame (see parameter \code{as.df}).
 }
 \description{
-Generate pseudo-randon or quasi-random designs. Basically a wrapper
+Generate pseudo-random (uniform, latin-hypercube samle) or quasi-random
+(Halton and Sobol sequences) designs. Basically a wrapper
 around different functions from packages \pkg{lhs} and \pkg{randtoolbox}.
 }
 \examples{

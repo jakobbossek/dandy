@@ -1,8 +1,7 @@
-#' @title
-#' Create a design.
+#' @title Design generator.
 #'
-#' @description
-#' Generate pseudo-randon or quasi-random designs. Basically a wrapper
+#' @description Generate pseudo-random (uniform, latin-hypercube samle) or quasi-random
+#' (Halton and Sobol sequences) designs. Basically a wrapper
 #' around different functions from packages \pkg{lhs} and \pkg{randtoolbox}.
 #'
 #' @param n [\code{integer(1)}]\cr
@@ -58,7 +57,7 @@ design = function(n, k, method, l = 0, u = 1, as.df = TRUE, ...) {
   checkmate::assertNumeric(u, len = k, any.missing = FALSE, all.missing = FALSE)
 
   if (any(l >= u))
-    BBmisc::stopf("[sampling::design] Lower bounds must be strictly lower than upper bounds.")
+    BBmisc::stopf("[dandy::design] Lower bounds must be strictly lower than upper bounds.")
 
   des = if (method == "uniform") {
     matrix(runif(n * k), nrow = n)
@@ -75,7 +74,7 @@ design = function(n, k, method, l = 0, u = 1, as.df = TRUE, ...) {
     args$n = n; args$dim = k
     do.call(randtoolbox::sobol, args)
   } else {
-    BBmisc::stopf("[sampling::design] Unsupported method '%s'.", method)
+    BBmisc::stopf("[dandy::design] Unsupported method '%s'.", method)
   }
 
   # linear transformation
@@ -89,7 +88,9 @@ design = function(n, k, method, l = 0, u = 1, as.df = TRUE, ...) {
   return(des)
 }
 
-#' Get character vector of supported design generators.
+#' Get character vector of supported design generators,
+#' i.e., possible value for parameter \code{method} of
+#' function \code{\link{design}}.
 #' @export
 getSupportedMethods = function() {
   c("uniform", "improvedlhs", "maximinlhs", "geneticlhs", "halton", "sobol")

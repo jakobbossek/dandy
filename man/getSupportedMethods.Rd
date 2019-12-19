@@ -2,10 +2,14 @@
 % Please edit documentation in R/design.R
 \name{getSupportedMethods}
 \alias{getSupportedMethods}
-\title{Get character vector of supported design generators.}
+\title{Get character vector of supported design generators,
+i.e., possible value for parameter \code{method} of
+function \code{\link{design}}.}
 \usage{
 getSupportedMethods()
 }
 \description{
-Get character vector of supported design generators.
+Get character vector of supported design generators,
+i.e., possible value for parameter \code{method} of
+function \code{\link{design}}.
 }
