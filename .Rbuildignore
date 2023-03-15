@@ -17,3 +17,6 @@ cran-comments.md
 ^docs$
 bottleneck
 data-raw
+lit
+README.html
+README.Rmd
